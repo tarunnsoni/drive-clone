@@ -24,7 +24,6 @@ export default function HeroCard() {
         shadow-2xl shadow-black/10
       "
     >
-      {/* Browser Header */}
       <div
         className="
           flex h-14 items-center justify-between
@@ -33,16 +32,13 @@ export default function HeroCard() {
           sm:px-5
         "
       >
-        {/* Left side */}
         <div className="flex min-w-0 items-center gap-3">
-          {/* Window dots */}
           <div className="flex shrink-0 items-center gap-1.5">
             <span className="size-2.5 rounded-full bg-red-500" />
             <span className="size-2.5 rounded-full bg-yellow-500" />
             <span className="size-2.5 rounded-full bg-green-500" />
           </div>
 
-          {/* URL */}
           <span
             className="
               truncate
@@ -55,7 +51,6 @@ export default function HeroCard() {
           </span>
         </div>
 
-        {/* Sync status */}
         <Badge
           variant="secondary"
           className="
@@ -75,9 +70,7 @@ export default function HeroCard() {
         </Badge>
       </div>
 
-      {/* Main Content */}
       <div className="p-5 sm:p-7">
-        {/* Drive Header */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex min-w-0 items-center gap-2">
             <h3 className="truncate text-base font-semibold sm:text-lg">
@@ -101,7 +94,6 @@ export default function HeroCard() {
             </Badge>
           </div>
 
-          {/* Avatars */}
           <div className="ml-3 flex shrink-0 -space-x-2">
             <div className="flex size-8 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
               A
@@ -117,7 +109,6 @@ export default function HeroCard() {
           </div>
         </div>
 
-        {/* Files */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <FileCard
             icon={<FileText className="size-5 text-blue-600" />}
@@ -136,7 +127,6 @@ export default function HeroCard() {
           />
         </div>
 
-        {/* Sync Card */}
         <div
           className="
             mt-5
@@ -209,7 +199,6 @@ function FileCard({
         sm:p-4
       "
     >
-      {/* Top */}
       <div className="flex items-start justify-between">
         <div
           className={`
@@ -236,7 +225,6 @@ function FileCard({
         </button>
       </div>
 
-      {/* File information */}
       <div className="mt-4 min-w-0">
         <p
           className="

@@ -1,6 +1,9 @@
+import { SidebarInset, SidebarProvider } from '#/components/ui/sidebar'
 import { auth } from '@clerk/tanstack-react-start/server'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
+import DriveSidebar from './-components/drive-sidebar'
+import DriveHeader from './-components/drive-header'
 
 export const getAuthState = createServerFn().handler(async () => {
   const { isAuthenticated, userId } = await auth()
@@ -24,8 +27,12 @@ export const Route = createFileRoute('/drive')({
 
 function RouteComponent() {
   return (
-    <div className="max-w-7xl mx-auto">
-      <Outlet />
-    </div>
+    <SidebarProvider>
+      <DriveSidebar />
+
+      <SidebarInset>
+        <Outlet />
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

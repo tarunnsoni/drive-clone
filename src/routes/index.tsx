@@ -1,5 +1,6 @@
 import Features from '#/components/features-section/features'
 import Footer from '#/components/footer'
+import Header from '#/components/header'
 import HeroCard from '#/components/hero-section/hero-card'
 import HeroContent from '#/components/hero-section/hero-content'
 import HowItWorks from '#/components/how-it-works-section/how-it-works'
@@ -11,6 +12,8 @@ export const Route = createFileRoute('/')({ component: Home })
 function Home() {
   return (
     <div className="max-w-7xl mx-auto">
+      <Header />
+
       {/* Hero Section */}
       <div
         id="hero"

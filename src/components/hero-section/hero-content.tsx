@@ -1,5 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Show, SignUpButton } from '@clerk/tanstack-react-start'
+import { Link } from '@tanstack/react-router'
 import { ArrowRight, Cloud, LockKeyhole } from 'lucide-react'
 
 export default function HeroContent() {
@@ -74,34 +76,41 @@ export default function HeroContent() {
           sm:flex-row
         "
       >
-        <Button
-          size="lg"
-          className="
+        <Show when={'signed-out'}>
+          <SignUpButton mode="modal" forceRedirectUrl={'/drive'}>
+            <Button
+              size="lg"
+              className="
             h-12
             rounded-full
             px-7
             text-base
             shadow-md
             sm:h-13
-          "
-        >
-          Get Started Free
-          <ArrowRight className="size-4" />
-        </Button>
+            "
+            >
+              Get Started Free
+              <ArrowRight className="size-4" />
+            </Button>
+          </SignUpButton>
+        </Show>
 
-        <Button
-          variant="secondary"
-          size="lg"
-          className="
+        <Show when={'signed-in'}>
+          <Button
+            variant="secondary"
+            size="lg"
+            className="
             h-12
             rounded-full
             px-7
             text-base
             sm:h-13
           "
-        >
-          Sign In to Drive
-        </Button>
+            asChild
+          >
+            <Link to="/drive">Go to Drive</Link>
+          </Button>
+        </Show>
       </div>
     </div>
   )

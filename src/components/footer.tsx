@@ -14,8 +14,8 @@ const footerLinks = [
   {
     title: 'Account',
     links: [
-      { label: 'Sign In', href: '/sign-in' },
-      { label: 'Get Started', href: '/sign-up' },
+      { label: 'Sign In', href: '#hero' },
+      { label: 'Get Started', href: '#hero' },
     ],
   },
   {

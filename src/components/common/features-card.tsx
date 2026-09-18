@@ -10,6 +10,7 @@ type FeatureCardProps = {
   title: string
   description: string
   tags: string[]
+  eyebrow?: string
 }
 
 export default function FeatureCard({
@@ -22,6 +23,7 @@ export default function FeatureCard({
   title,
   description,
   tags,
+  eyebrow,
 }: FeatureCardProps) {
   return (
     <div
@@ -29,15 +31,19 @@ export default function FeatureCard({
         flex h-full min-w-0 flex-col
         rounded-2xl border border-border/60
         bg-background p-5
-        shadow-sm
-        transition-shadow duration-200
+        shadow-sm transition-shadow duration-200
         hover:shadow-md
         sm:p-6
       "
     >
       <div className="flex items-start justify-between gap-3">
         <div
-          className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${iconBackground} ${iconColor}`}
+          className={`
+            flex size-10 shrink-0 items-center justify-center
+            rounded-xl
+            ${iconBackground}
+            ${iconColor}
+          `}
         >
           {icon}
         </div>
@@ -45,9 +51,8 @@ export default function FeatureCard({
         <Badge
           variant="secondary"
           className={`
-            shrink-0 rounded-full
-            border-0 px-2.5 py-1
-            text-[10px] font-medium
+            shrink-0 rounded-full border-0
+            px-2.5 py-1 text-[10px] font-medium
             ${badgeBackground}
             ${badgeColor}
           `}
@@ -57,6 +62,18 @@ export default function FeatureCard({
       </div>
 
       <div className="mt-5">
+        {eyebrow && (
+          <p
+            className={`
+              mb-1.5 text-[10px] font-semibold
+              uppercase tracking-wide
+              ${badgeColor}
+            `}
+          >
+            {eyebrow}
+          </p>
+        )}
+
         <h3 className="text-base font-semibold tracking-tight sm:text-lg">
           {title}
         </h3>

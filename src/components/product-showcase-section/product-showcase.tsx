@@ -66,6 +66,7 @@ const navigation = [
 export default function ProductShowcase() {
   return (
     <section
+      id="showcase"
       className="
         w-full px-4 py-8
         sm:px-6 sm:py-10

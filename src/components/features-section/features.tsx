@@ -56,6 +56,7 @@ const features = [
 export default function Features() {
   return (
     <section
+      id="features"
       className="
         w-full
         px-4 pt-6 pb-8

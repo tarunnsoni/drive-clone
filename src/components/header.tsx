@@ -32,7 +32,7 @@ export default function Header() {
           <HeaderUser />
 
           {!isSignedIn && (
-            <SignUpButton mode="modal" forceRedirectUrl={'/drive'}>
+            <SignUpButton mode="modal">
               <Button className="h-8 shrink-0 rounded-full px-2.5 text-xs font-medium shadow-sm sm:h-10 sm:px-6 sm:text-sm">
                 <span className="sm:hidden">Get Started</span>
                 <span className="hidden sm:inline">Get Started Free</span>

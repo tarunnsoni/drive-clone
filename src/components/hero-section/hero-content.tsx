@@ -77,7 +77,7 @@ export default function HeroContent() {
         "
       >
         <Show when={'signed-out'}>
-          <SignUpButton mode="modal" forceRedirectUrl={'/drive'}>
+          <SignUpButton mode="modal">
             <Button
               size="lg"
               className="

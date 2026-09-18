@@ -9,7 +9,7 @@ export default function HeaderUser() {
       </Show>
 
       <Show when="signed-out">
-        <SignInButton mode="modal" forceRedirectUrl={'/drive'}>
+        <SignInButton mode="modal">
           <Button
             variant="ghost"
             className="h-8 shrink-0 px-2 text-xs font-medium sm:h-10 sm:px-5 sm:text-sm"

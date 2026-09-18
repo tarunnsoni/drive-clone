@@ -2,6 +2,7 @@ import Features from '#/components/features-section/features'
 import Header from '#/components/header'
 import HeroCard from '#/components/hero-section/hero-card'
 import HeroContent from '#/components/hero-section/hero-content'
+import ProductShowcase from '#/components/product-showcase-section/product-showcase'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({ component: Home })
@@ -28,6 +29,9 @@ function Home() {
 
       {/* Features Section */}
       <Features />
+
+      {/* Product Showcase Sections */}
+      <ProductShowcase />
     </div>
   )
 }

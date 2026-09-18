@@ -1,6 +1,6 @@
 import { Cloud, FolderOpen, LockKeyhole, Search } from 'lucide-react'
 
-import FeatureCard from './features-card'
+import FeatureCard from '../common/features-card'
 
 const features = [
   {
@@ -58,9 +58,9 @@ export default function Features() {
     <section
       className="
         w-full
-        px-4 pt-6 pb-16
-        sm:px-6 sm:pt-8 sm:pb-20
-        lg:pt-10 lg:pb-24
+        px-4 pt-6 pb-8
+        sm:px-6 sm:pt-8 sm:pb-10
+        lg:pt-10 lg:pb-14
       "
     >
       <div className="mx-auto w-full max-w-7xl">

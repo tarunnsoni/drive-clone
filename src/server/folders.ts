@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { createClient } from '#/lib/supabase/server'
 import { auth } from '@clerk/tanstack-react-start/server'
 import { type Folder } from '#/types/index'
+import { createFolderSchema } from '#/lib/schemas'
 
 const getFolders = createServerFn({ method: 'GET' }).handler(async () => {
   const { userId } = await auth()
@@ -25,4 +26,34 @@ const getFolders = createServerFn({ method: 'GET' }).handler(async () => {
   return folders as Array<Folder & { files: Array<{ id: string }> }>
 })
 
-export { getFolders }
+const createFolder = createServerFn({ method: 'POST' })
+  .validator(createFolderSchema)
+  .handler(async ({ data }) => {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error('Unauthenticated')
+    }
+
+    const supabase = await createClient()
+
+    const { name: folderName, parentId } = data
+
+    const { data: folder, error } = await supabase
+      .from('folders')
+      .insert({
+        user_id: userId,
+        name: folderName,
+        parent_id: parentId ?? null,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return folder as Folder
+  })
+
+export { getFolders, createFolder }

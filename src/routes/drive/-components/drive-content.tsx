@@ -8,8 +8,12 @@ import { FileCardSkeleton, FolderCardSkeleton } from './drive-card-skeletons'
 
 import { useFiles, useFolders } from '#/lib/react-query/queries'
 import { toFileCardProps } from '#/utils/file'
+import CreateFolderDialog from './create-folder-dialog'
+import { useState } from 'react'
 
 export default function DriveContent({ search }: { search: string }) {
+  const [createFolderOpen, setCreateFolderOpen] = useState(false)
+
   const { data: folders = [], isLoading: foldersLoading } = useFolders()
   const { data: files = [], isLoading: filesLoading } = useFiles()
 
@@ -45,7 +49,11 @@ export default function DriveContent({ search }: { search: string }) {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" className="gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setCreateFolderOpen(true)}
+          >
             <FolderPlus className="size-4" />
 
             <span className="hidden sm:inline">New folder</span>
@@ -59,7 +67,6 @@ export default function DriveContent({ search }: { search: string }) {
           </Button>
         </div>
       </div>
-
       {isLoading ? (
         <div className="mt-8 space-y-9">
           <section>
@@ -147,6 +154,10 @@ export default function DriveContent({ search }: { search: string }) {
           )}
         </div>
       )}
+      <CreateFolderDialog
+        open={createFolderOpen}
+        onOpenChange={setCreateFolderOpen}
+      />
     </main>
   )
 }

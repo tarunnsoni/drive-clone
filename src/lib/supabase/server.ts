@@ -1,38 +1,15 @@
-import { createServerClient } from '@supabase/ssr'
-import {
-  getCookies,
-  setCookie,
-  setResponseHeader,
-} from '@tanstack/react-start/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { auth } from '@clerk/tanstack-react-start/server'
 
-export function createClient() {
-  return createServerClient(
+export async function createClient() {
+  const { getToken } = await auth()
+
+  return createSupabaseClient(
     process.env.VITE_SUPABASE_URL!,
     process.env.VITE_SUPABASE_KEY!,
     {
-      cookies: {
-        getAll() {
-          return Object.entries(getCookies()).map(
-            ([name, value]) => ({
-              name,
-              value,
-            }),
-          )
-        },
-
-        setAll(cookies, headers) {
-          cookies.forEach(
-            ({ name, value, options }) => {
-              setCookie(name, value, options)
-            },
-          )
-
-          Object.entries(headers).forEach(
-            ([name, value]) => {
-              setResponseHeader(name, value)
-            },
-          )
-        },
+      accessToken: async () => {
+        return await getToken()
       },
     },
   )

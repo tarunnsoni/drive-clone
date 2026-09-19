@@ -3,7 +3,6 @@ import { auth } from '@clerk/tanstack-react-start/server'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import DriveSidebar from './-components/drive-sidebar'
-import DriveHeader from './-components/drive-header'
 
 export const getAuthState = createServerFn().handler(async () => {
   const { isAuthenticated, userId } = await auth()

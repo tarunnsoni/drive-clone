@@ -1,16 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { createClient } from '#/lib/supabase/server'
-import { auth } from '@clerk/tanstack-react-start/server'
 import { type File } from '#/types/index'
+import { createFileSchema } from '#/lib/schemas'
+import { getCurrentUserId } from './auth'
 
 const getFiles = createServerFn({ method: 'GET' }).handler(async () => {
-  const { userId } = await auth()
-
-  // check for user is authenticated or not
-  if (!userId) {
-    throw new Error('Unauthenticated')
-  }
-
   const supabase = await createClient()
 
   const { data: files, error } = await supabase.from('files').select('*')
@@ -22,4 +16,33 @@ const getFiles = createServerFn({ method: 'GET' }).handler(async () => {
   return files as Array<File>
 })
 
-export { getFiles }
+const createFileRecord = createServerFn({ method: 'POST' })
+  .validator(createFileSchema)
+  .handler(async ({ data }) => {
+    const userId = await getCurrentUserId()
+
+    const supabase = await createClient()
+
+    const { mimeType, name, size, storagePath, folderId } = data
+
+    const { data: driveFile, error } = await supabase
+      .from('files')
+      .insert({
+        user_id: userId,
+        name,
+        mime_type: mimeType,
+        storage_path: storagePath,
+        size,
+        folder_id: folderId ?? null,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return driveFile
+  })
+
+export { getFiles, createFileRecord }

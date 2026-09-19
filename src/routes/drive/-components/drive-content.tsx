@@ -10,6 +10,7 @@ import { useFiles, useFolders } from '#/lib/react-query/queries'
 import { toFileCardProps } from '#/utils/file'
 import CreateFolderDialog from './create-folder-dialog'
 import { useState } from 'react'
+import { UploadFileButton } from './upload-file-button'
 
 export default function DriveContent({ search }: { search: string }) {
   const [createFolderOpen, setCreateFolderOpen] = useState(false)
@@ -61,10 +62,7 @@ export default function DriveContent({ search }: { search: string }) {
             <span className="sm:hidden">Folder</span>
           </Button>
 
-          <Button className="gap-2">
-            <Upload className="size-4" />
-            Upload
-          </Button>
+          <UploadFileButton />
         </div>
       </div>
       {isLoading ? (

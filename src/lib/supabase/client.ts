@@ -1,10 +1,13 @@
-/// <reference types="vite/client" />
+import { createClient } from '@supabase/supabase-js'
 
-import { createBrowserClient } from '@supabase/ssr'
-
-export function createClient() {
-  return createBrowserClient(
+export function createBrowserSupabaseClient(
+  getToken: () => Promise<string | null>,
+) {
+  return createClient(
     import.meta.env.VITE_SUPABASE_URL,
     import.meta.env.VITE_SUPABASE_KEY,
+    {
+      accessToken: getToken,
+    },
   )
 }

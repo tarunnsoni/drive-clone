@@ -1,11 +1,11 @@
-import { Search, Upload } from 'lucide-react'
+import { Search } from 'lucide-react'
 
 import { UserButton } from '@clerk/tanstack-react-start'
 
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import { UploadFileButton } from './upload-file-button'
 
 type DriveHeaderProps = {
   search: string
@@ -39,15 +39,7 @@ export default function DriveHeader({ search, setSearch }: DriveHeaderProps) {
           />
         </div>
 
-        <Button className="hidden shrink-0 gap-2 sm:flex">
-          <Upload className="size-4" />
-          Upload
-        </Button>
-
-        <Button size="icon" className="size-9 shrink-0 sm:hidden">
-          <Upload className="size-4" />
-          <span className="sr-only">Upload</span>
-        </Button>
+        <UploadFileButton position="header" />
 
         <Separator orientation="vertical" className="h-5" />
 

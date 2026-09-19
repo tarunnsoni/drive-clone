@@ -1,69 +1,18 @@
 import { FolderPlus, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+
 import FolderCard from './folder-card'
 import FileCard from './file-card'
-import type { FileCardProps } from '#/types/index'
 
-const folders = [
-  {
-    name: 'Projects',
-    items: 12,
-  },
-  {
-    name: 'Client Contracts',
-    items: 8,
-  },
-  {
-    name: 'Personal',
-    items: 16,
-  },
-  {
-    name: 'Documents',
-    items: 24,
-  },
-]
+import { FileCardSkeleton, FolderCardSkeleton } from './drive-card-skeletons'
 
-const files: Array<FileCardProps> = [
-  {
-    name: 'Resume.pdf',
-    type: 'pdf',
-    size: '2.4 MB',
-    modified: '2 days ago',
-    starred: true,
-  },
-  {
-    name: 'Profile.png',
-    type: 'image',
-    size: '1.8 MB',
-    modified: '4 days ago',
-  },
-  {
-    name: 'Expenses.xlsx',
-    type: 'spreadsheet',
-    size: '890 KB',
-    modified: '1 week ago',
-  },
-  {
-    name: 'Pitch Deck 2025.pptx',
-    type: 'spreadsheet',
-    size: '14.2 MB',
-    modified: '1 week ago',
-  },
-  {
-    name: 'Project Brief.pdf',
-    type: 'pdf',
-    size: '3.1 MB',
-    modified: '2 weeks ago',
-  },
-  {
-    name: 'Brand Assets.zip',
-    type: 'archive',
-    size: '24.6 MB',
-    modified: '3 weeks ago',
-  },
-]
+import { useFiles, useFolders } from '#/lib/react-query/queries'
+import { toFileCardProps } from '#/utils/file'
 
 export default function DriveContent({ search }: { search: string }) {
+  const { data: folders = [], isLoading: foldersLoading } = useFolders()
+  const { data: files = [], isLoading: filesLoading } = useFiles()
+
   const normalizedSearch = search.trim().toLowerCase()
 
   const filteredFolders = folders.filter((folder) =>
@@ -75,6 +24,8 @@ export default function DriveContent({ search }: { search: string }) {
   )
 
   const hasResults = filteredFolders.length > 0 || filteredFiles.length > 0
+
+  const isLoading = foldersLoading || filesLoading
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-9">
@@ -96,7 +47,9 @@ export default function DriveContent({ search }: { search: string }) {
         <div className="flex gap-2">
           <Button variant="outline" className="gap-2">
             <FolderPlus className="size-4" />
+
             <span className="hidden sm:inline">New folder</span>
+
             <span className="sm:hidden">Folder</span>
           </Button>
 
@@ -107,7 +60,41 @@ export default function DriveContent({ search }: { search: string }) {
         </div>
       </div>
 
-      {!hasResults ? (
+      {isLoading ? (
+        <div className="mt-8 space-y-9">
+          <section>
+            <div className="mb-3">
+              <h2 className="text-sm font-semibold">Folders</h2>
+
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Your organized spaces
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <FolderCardSkeleton key={index} />
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <div className="mb-3">
+              <h2 className="text-sm font-semibold">Recent files</h2>
+
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Your recently modified files
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <FileCardSkeleton key={index} />
+              ))}
+            </div>
+          </section>
+        </div>
+      ) : !hasResults ? (
         <EmptySearch />
       ) : (
         <div className="mt-8 space-y-9">
@@ -126,9 +113,9 @@ export default function DriveContent({ search }: { search: string }) {
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {filteredFolders.map((folder) => (
                   <FolderCard
-                    key={folder.name}
+                    key={folder.id}
                     name={folder.name}
-                    items={folder.items}
+                    items={folder.files.length}
                   />
                 ))}
               </div>
@@ -153,7 +140,7 @@ export default function DriveContent({ search }: { search: string }) {
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {filteredFiles.map((file) => (
-                  <FileCard key={file.name} {...file} />
+                  <FileCard key={file.name} {...toFileCardProps(file)} />
                 ))}
               </div>
             </section>

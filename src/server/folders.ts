@@ -3,6 +3,7 @@ import { createClient } from '#/lib/supabase/server'
 import { type Folder } from '#/types/index'
 import { createFolderSchema } from '#/lib/schemas'
 import { getCurrentUserId } from './auth'
+import z from 'zod'
 
 const getFolders = createServerFn({ method: 'GET' }).handler(async () => {
   const supabase = await createClient()
@@ -45,4 +46,43 @@ const createFolder = createServerFn({ method: 'POST' })
     return folder as Folder
   })
 
-export { getFolders, createFolder }
+const markFolderStar = createServerFn({ method: 'POST' })
+  .validator(z.uuid())
+  .handler(async ({ data: folderId }) => {
+    const userId = await getCurrentUserId()
+
+    const supabase = await createClient()
+
+    const { data: folder, error } = await supabase
+      .from('folders')
+      .select('*')
+      .eq('id', folderId)
+      .eq('user_id', userId)
+      .single()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    if (!folder || !folder.id) {
+      throw new Error('Folder not found')
+    }
+
+    const { error: updateFolderError, data: updatedFolder } = await supabase
+      .from('folders')
+      .update({
+        is_starred: !folder.is_starred,
+      })
+      .eq('id', folder.id)
+      .eq('user_id', userId)
+      .select()
+      .single()
+
+    if (updateFolderError) {
+      throw new Error(updateFolderError.message)
+    }
+
+    return updatedFolder
+  })
+
+export { getFolders, createFolder, markFolderStar }

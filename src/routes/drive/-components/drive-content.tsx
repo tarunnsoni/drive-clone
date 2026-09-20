@@ -119,8 +119,10 @@ export default function DriveContent({ search }: { search: string }) {
                 {filteredFolders.map((folder) => (
                   <FolderCard
                     key={folder.id}
+                    id={folder.id}
                     name={folder.name}
                     items={folder.files.length}
+                    isStarred={folder.is_starred}
                   />
                 ))}
               </div>

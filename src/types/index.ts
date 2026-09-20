@@ -13,6 +13,7 @@ export type Folder = {
   user_id: string
   name: string
   parent_id: string | null
+  is_starred: boolean
   created_at: string
   updated_at: string
 }

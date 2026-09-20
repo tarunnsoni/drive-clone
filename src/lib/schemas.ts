@@ -19,7 +19,16 @@ export const createFileSchema = z.object({
   folderId: z.uuid().nullable().optional(),
 })
 
-// SCHEMA TYPES
+export const renameSchema = z.object({
+  id: z.uuid(),
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Name is required')
+    .max(255, 'Name is too long'),
+})
 
+// SCHEMA TYPES
 export type CreateFolderInput = z.infer<typeof createFolderSchema>
 export type CreateFileInput = z.infer<typeof createFileSchema>
+export type RenameInput = z.infer<typeof renameSchema>

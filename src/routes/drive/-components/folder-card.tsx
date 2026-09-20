@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { useMarkFolderStar } from '#/lib/react-query/mutations'
+import { useState } from 'react'
+import { RenameDialog } from './rename-dialog'
 
 type FolderCardProps = {
   id: string
@@ -24,6 +26,8 @@ export default function FolderCard({
   items,
   isStarred,
 }: FolderCardProps) {
+  const [renameOpen, setRenameOpen] = useState(false)
+
   const markFolderStar = useMarkFolderStar()
 
   const handleStarFolder = async () => {
@@ -65,7 +69,9 @@ export default function FolderCard({
         <DropdownMenuContent align="end">
           <DropdownMenuItem>Open</DropdownMenuItem>
 
-          <DropdownMenuItem>Rename</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setRenameOpen(true)}>
+            Rename
+          </DropdownMenuItem>
 
           <DropdownMenuItem
             disabled={markFolderStar.isPending}
@@ -81,6 +87,14 @@ export default function FolderCard({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <RenameDialog
+        open={renameOpen}
+        onOpenChange={setRenameOpen}
+        id={id}
+        currentName={name}
+        type="folder"
+      />
     </div>
   )
 }

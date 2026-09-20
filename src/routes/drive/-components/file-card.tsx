@@ -20,6 +20,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useMarkFileStar } from '#/lib/react-query/mutations'
+import { useState } from 'react'
+import { RenameDialog } from './rename-dialog'
 
 function getFileIcon(type: FileType) {
   const icons: Partial<Record<FileType, LucideIcon>> = {
@@ -54,6 +56,8 @@ export default function FileCard({
   modified,
   starred = false,
 }: FileCardProps) {
+  const [renameOpen, setRenameOpen] = useState(false)
+
   const Icon = getFileIcon(type)
   const markFileStar = useMarkFileStar()
 
@@ -101,7 +105,9 @@ export default function FileCard({
 
           <DropdownMenuItem>Download</DropdownMenuItem>
 
-          <DropdownMenuItem>Rename</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setRenameOpen(true)}>
+            Rename
+          </DropdownMenuItem>
 
           <DropdownMenuItem
             disabled={markFileStar.isPending}
@@ -117,6 +123,14 @@ export default function FileCard({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <RenameDialog
+        id={id}
+        type="file"
+        open={renameOpen}
+        onOpenChange={setRenameOpen}
+        currentName={name}
+      />
     </div>
   )
 }

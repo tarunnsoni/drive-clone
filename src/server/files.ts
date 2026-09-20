@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { createClient } from '#/lib/supabase/server'
 import { type File } from '#/types/index'
-import { createFileSchema } from '#/lib/schemas'
+import { createFileSchema, renameSchema } from '#/lib/schemas'
 import { getCurrentUserId } from './auth'
 import z from 'zod'
 
@@ -85,4 +85,36 @@ const markFileStar = createServerFn({ method: 'POST' })
     return updatedFile
   })
 
-export { getFiles, createFileRecord, markFileStar }
+const renameFile = createServerFn({
+  method: 'POST',
+})
+  .validator(renameSchema)
+  .handler(async ({ data }) => {
+    console.log(1)
+
+    const userId = await getCurrentUserId()
+
+    const supabase = await createClient()
+
+    const { data: file, error } = await supabase
+      .from('files')
+      .update({
+        name: data.name,
+      })
+      .eq('id', data.id)
+      .eq('user_id', userId)
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    if (!file) {
+      throw new Error('File not found')
+    }
+
+    return file
+  })
+
+export { getFiles, createFileRecord, markFileStar, renameFile }

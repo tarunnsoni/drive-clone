@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { createClient } from '#/lib/supabase/server'
 import { type Folder } from '#/types/index'
-import { createFolderSchema } from '#/lib/schemas'
+import { createFolderSchema, renameSchema } from '#/lib/schemas'
 import { getCurrentUserId } from './auth'
 import z from 'zod'
 
@@ -85,4 +85,34 @@ const markFolderStar = createServerFn({ method: 'POST' })
     return updatedFolder
   })
 
-export { getFolders, createFolder, markFolderStar }
+const renameFolder = createServerFn({
+  method: 'POST',
+})
+  .validator(renameSchema)
+  .handler(async ({ data }) => {
+    const userId = await getCurrentUserId()
+
+    const supabase = await createClient()
+
+    const { data: folder, error } = await supabase
+      .from('folders')
+      .update({
+        name: data.name,
+      })
+      .eq('id', data.id)
+      .eq('user_id', userId)
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    if (!folder) {
+      throw new Error('Folder not found')
+    }
+
+    return folder
+  })
+
+export { getFolders, createFolder, markFolderStar, renameFolder }

@@ -1,8 +1,8 @@
-import { createFolder, markFolderStar } from '#/server/folders'
+import { createFolder, markFolderStar, renameFolder } from '#/server/folders'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { QUERY_KEYS } from './query-keys'
-import type { CreateFolderInput } from '../schemas'
-import { createFileRecord, markFileStar } from '#/server/files'
+import type { CreateFolderInput, RenameInput } from '../schemas'
+import { createFileRecord, markFileStar, renameFile } from '#/server/files'
 import { createBrowserSupabaseClient } from '../supabase/client'
 import { useAuth } from '@clerk/tanstack-react-start'
 import { getCurrentUserId } from '#/server/auth'
@@ -74,7 +74,7 @@ function useUploadFile() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['files'],
+        queryKey: [QUERY_KEYS.FILES],
       })
     },
   })
@@ -106,4 +106,38 @@ const useMarkFileStar = () => {
   })
 }
 
-export { useCreateFolder, useUploadFile, useMarkFolderStar, useMarkFileStar }
+const useRenameFolder = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (folderDetails: RenameInput) =>
+      renameFolder({ data: folderDetails }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.FOLDERS],
+      })
+    },
+  })
+}
+
+const useRenameFile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (fileDetails: RenameInput) => renameFile({ data: fileDetails }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.FILES],
+      })
+    },
+  })
+}
+
+export {
+  useCreateFolder,
+  useUploadFile,
+  useMarkFolderStar,
+  useMarkFileStar,
+  useRenameFile,
+  useRenameFolder,
+}

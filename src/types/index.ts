@@ -1,6 +1,7 @@
 export type FileType = 'pdf' | 'image' | 'spreadsheet' | 'archive' | 'document'
 
 export type FileCardProps = {
+  id: string
   name: string
   type: FileType
   size: string

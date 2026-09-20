@@ -2,7 +2,7 @@ import { createFolder, markFolderStar } from '#/server/folders'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { QUERY_KEYS } from './query-keys'
 import type { CreateFolderInput } from '../schemas'
-import { createFileRecord } from '#/server/files'
+import { createFileRecord, markFileStar } from '#/server/files'
 import { createBrowserSupabaseClient } from '../supabase/client'
 import { useAuth } from '@clerk/tanstack-react-start'
 import { getCurrentUserId } from '#/server/auth'
@@ -93,4 +93,17 @@ const useMarkFolderStar = () => {
   })
 }
 
-export { useCreateFolder, useUploadFile, useMarkFolderStar }
+const useMarkFileStar = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (fileId: string) => markFileStar({ data: fileId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.FILES],
+      })
+    },
+  })
+}
+
+export { useCreateFolder, useUploadFile, useMarkFolderStar, useMarkFileStar }

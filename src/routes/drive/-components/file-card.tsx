@@ -19,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useMarkFileStar } from '#/lib/react-query/mutations'
 
 function getFileIcon(type: FileType) {
   const icons: Partial<Record<FileType, LucideIcon>> = {
@@ -46,6 +47,7 @@ function getFileStyle(type: FileType) {
 }
 
 export default function FileCard({
+  id,
   name,
   type,
   size,
@@ -53,6 +55,11 @@ export default function FileCard({
   starred = false,
 }: FileCardProps) {
   const Icon = getFileIcon(type)
+  const markFileStar = useMarkFileStar()
+
+  const handleFileStar = async () => {
+    await markFileStar.mutateAsync(id)
+  }
 
   return (
     <div className="flex min-w-0 items-center gap-3 rounded-xl border border-border/60 bg-background p-3 transition-all hover:-translate-y-0.5 hover:border-border hover:shadow-sm">
@@ -96,7 +103,10 @@ export default function FileCard({
 
           <DropdownMenuItem>Rename</DropdownMenuItem>
 
-          <DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={markFileStar.isPending}
+            onClick={handleFileStar}
+          >
             {starred ? 'Remove from Starred' : 'Add to Starred'}
           </DropdownMenuItem>
 

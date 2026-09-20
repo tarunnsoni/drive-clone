@@ -41,6 +41,7 @@ function formatModifiedDate(date: string): string {
 
 export function toFileCardProps(file: File): FileCardProps {
   return {
+    id: file.id,
     name: file.name,
     type: getFileType(file.mime_type),
     size: formatFileSize(file.size),

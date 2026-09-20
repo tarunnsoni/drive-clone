@@ -3,6 +3,7 @@ import { createClient } from '#/lib/supabase/server'
 import { type File } from '#/types/index'
 import { createFileSchema } from '#/lib/schemas'
 import { getCurrentUserId } from './auth'
+import z from 'zod'
 
 const getFiles = createServerFn({ method: 'GET' }).handler(async () => {
   const supabase = await createClient()
@@ -45,4 +46,43 @@ const createFileRecord = createServerFn({ method: 'POST' })
     return driveFile
   })
 
-export { getFiles, createFileRecord }
+const markFileStar = createServerFn({ method: 'POST' })
+  .validator(z.uuid())
+  .handler(async ({ data: fileId }) => {
+    const userId = await getCurrentUserId()
+
+    const supabase = await createClient()
+
+    const { data: file, error } = await supabase
+      .from('files')
+      .select('*')
+      .eq('id', fileId)
+      .eq('user_id', userId)
+      .single()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    if (!file || !file.id) {
+      throw new Error('File not found')
+    }
+
+    const { error: updateFileError, data: updatedFile } = await supabase
+      .from('files')
+      .update({
+        is_starred: !file.is_starred,
+      })
+      .eq('id', file.id)
+      .eq('user_id', userId)
+      .select()
+      .single()
+
+    if (updateFileError) {
+      throw new Error(updateFileError.message)
+    }
+
+    return updatedFile
+  })
+
+export { getFiles, createFileRecord, markFileStar }

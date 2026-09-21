@@ -19,7 +19,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useMarkFileStar } from '#/lib/react-query/mutations'
+import {
+  useMarkFileStar,
+  useMoveFileToTrash,
+} from '#/lib/react-query/mutations'
 import { useState } from 'react'
 import { RenameDialog } from './rename-dialog'
 
@@ -60,9 +63,14 @@ export default function FileCard({
 
   const Icon = getFileIcon(type)
   const markFileStar = useMarkFileStar()
+  const moveFileToTrash = useMoveFileToTrash()
 
   const handleFileStar = async () => {
     await markFileStar.mutateAsync(id)
+  }
+
+  const handleMoveFileToTrash = async () => {
+    await moveFileToTrash.mutateAsync(id)
   }
 
   return (
@@ -118,7 +126,11 @@ export default function FileCard({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem className="text-destructive focus:text-destructive">
+          <DropdownMenuItem
+            onClick={handleMoveFileToTrash}
+            disabled={moveFileToTrash.isPending}
+            className="text-destructive focus:text-destructive"
+          >
             Move to Trash
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -2,21 +2,41 @@ import { createFolder, markFolderStar, renameFolder } from '#/server/folders'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { QUERY_KEYS } from './query-keys'
 import type { CreateFolderInput, RenameInput } from '../schemas'
-import { createFileRecord, markFileStar, renameFile } from '#/server/files'
+import {
+  createFileRecord,
+  markFileStar,
+  renameFile,
+  deleteFile,
+  moveFileToTrash,
+} from '#/server/files'
 import { createBrowserSupabaseClient } from '../supabase/client'
 import { useAuth } from '@clerk/tanstack-react-start'
 import { getCurrentUserId } from '#/server/auth'
 import { v4 as uuidv4 } from 'uuid'
 
-const useCreateFolder = () => {
+// -- FILES --
+
+const useMarkFileStar = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (folderDetails: CreateFolderInput) =>
-      createFolder({ data: folderDetails }),
+    mutationFn: (fileId: string) => markFileStar({ data: fileId }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.FOLDERS],
+        queryKey: [QUERY_KEYS.FILES],
+      })
+    },
+  })
+}
+
+const useRenameFile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (fileDetails: RenameInput) => renameFile({ data: fileDetails }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.FILES],
       })
     },
   })
@@ -80,11 +100,43 @@ function useUploadFile() {
   })
 }
 
-const useMarkFolderStar = () => {
+function useMoveFileToTrash() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (folderId: string) => markFolderStar({ data: folderId }),
+    mutationFn: (fileId: string) => moveFileToTrash({ data: fileId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.FILES],
+      })
+    },
+  })
+}
+
+function useDeleteFile() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (fileId: string) =>
+      deleteFile({
+        data: fileId,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.FILES],
+      })
+    },
+  })
+}
+
+// -- FOLDERS --
+
+const useCreateFolder = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (folderDetails: CreateFolderInput) =>
+      createFolder({ data: folderDetails }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.FOLDERS],
@@ -93,14 +145,14 @@ const useMarkFolderStar = () => {
   })
 }
 
-const useMarkFileStar = () => {
+const useMarkFolderStar = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (fileId: string) => markFileStar({ data: fileId }),
+    mutationFn: (folderId: string) => markFolderStar({ data: folderId }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.FILES],
+        queryKey: [QUERY_KEYS.FOLDERS],
       })
     },
   })
@@ -120,19 +172,6 @@ const useRenameFolder = () => {
   })
 }
 
-const useRenameFile = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (fileDetails: RenameInput) => renameFile({ data: fileDetails }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.FILES],
-      })
-    },
-  })
-}
-
 export {
   useCreateFolder,
   useUploadFile,
@@ -140,4 +179,6 @@ export {
   useMarkFileStar,
   useRenameFile,
   useRenameFolder,
+  useMoveFileToTrash,
+  useDeleteFile,
 }

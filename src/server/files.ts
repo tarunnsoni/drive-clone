@@ -117,4 +117,62 @@ const renameFile = createServerFn({
     return file
   })
 
-export { getFiles, createFileRecord, markFileStar, renameFile }
+const moveFileToTrash = createServerFn({ method: 'POST' })
+  .validator(z.uuid())
+  .handler(async ({ data: fileId }) => {
+    const userId = await getCurrentUserId()
+
+    const supabase = await createClient()
+
+    const { data: file, error } = await supabase
+      .from('files')
+      .update({
+        deleted_at: new Date().toISOString(),
+      })
+      .eq('id', fileId)
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    if (!file) {
+      throw new Error('File not found')
+    }
+
+    return file
+  })
+
+const deleteFile = createServerFn({ method: 'POST' })
+  .validator(z.uuid())
+  .handler(async ({ data: fileId }) => {
+    const userId = await getCurrentUserId()
+
+    const supabase = await createClient()
+
+    const { success, error } = await supabase
+      .from('files')
+      .delete()
+      .eq('id', fileId)
+      .eq('user_id', userId)
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    if (success) {
+      return { success }
+    }
+  })
+
+export {
+  getFiles,
+  createFileRecord,
+  markFileStar,
+  renameFile,
+  moveFileToTrash,
+  deleteFile,
+}

@@ -115,4 +115,8 @@ const renameFolder = createServerFn({
     return folder
   })
 
+const moveFolderToTrash = createServerFn({ method: 'POST' })
+
+const deleteFolder = createServerFn({ method: 'POST' })
+
 export { getFolders, createFolder, markFolderStar, renameFolder }

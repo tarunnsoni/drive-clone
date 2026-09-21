@@ -19,10 +19,11 @@ export default function DriveContent({ search }: { search: string }) {
   const { data: files = [], isLoading: filesLoading } = useFiles()
 
   const availableFiles = files.filter((file) => file.deleted_at === null)
+  const availableFolders = folders.filter((file) => file.deleted_at === null)
 
   const normalizedSearch = search.trim().toLowerCase()
 
-  const filteredFolders = folders.filter((folder) =>
+  const filteredFolders = availableFolders.filter((folder) =>
     folder.name.toLowerCase().includes(normalizedSearch),
   )
 

@@ -35,8 +35,6 @@ export function RenameDialog({
   const renameFileMutation = useRenameFile()
   const renameFolderMutation = useRenameFolder()
 
-  console.log({ id, name })
-
   const isPending =
     renameFileMutation.isPending || renameFolderMutation.isPending
 

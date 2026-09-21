@@ -6,13 +6,9 @@ import { useUploadFile } from '#/lib/react-query/mutations'
 
 interface UploadFileButtonProps {
   folderId?: string | null
-  position?: 'header' | 'content'
 }
 
-export function UploadFileButton({
-  folderId = null,
-  position = 'content',
-}: UploadFileButtonProps) {
+export function UploadFileButton({ folderId = null }: UploadFileButtonProps) {
   const uploadMutation = useUploadFile()
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -63,8 +59,7 @@ export function UploadFileButton({
           ) : (
             <Upload className="size-4" />
           )}
-
-          {position !== 'header' && (isUploading ? 'Uploading...' : 'Upload')}
+          {isUploading ? 'Uploading...' : 'Upload'}
         </label>
       </Button>
 

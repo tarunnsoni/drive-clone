@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import DriveHeader from './-components/drive-header'
+
 import DriveContent from './-components/drive-content'
 
 export const Route = createFileRoute('/drive/')({
@@ -8,12 +7,7 @@ export const Route = createFileRoute('/drive/')({
 })
 
 function DrivePage() {
-  const [search, setSearch] = useState('')
+  const { search = '' } = Route.useSearch()
 
-  return (
-    <>
-      <DriveHeader search={search} setSearch={setSearch} />
-      <DriveContent search={search} />
-    </>
-  )
+  return <DriveContent search={search} />
 }

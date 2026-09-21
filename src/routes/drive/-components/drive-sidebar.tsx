@@ -65,11 +65,7 @@ export default function DriveSidebar() {
 
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={item.title === 'My Drive'}
-                      tooltip={item.title}
-                    >
+                    <SidebarMenuButton asChild tooltip={item.title}>
                       <a href={item.href}>
                         <Icon />
                         <span>{item.title}</span>

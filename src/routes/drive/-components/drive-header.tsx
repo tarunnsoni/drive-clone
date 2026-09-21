@@ -1,18 +1,57 @@
-import { Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Search, X } from 'lucide-react'
 
 import { UserButton } from '@clerk/tanstack-react-start'
 
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import { UploadFileButton } from './upload-file-button'
+import { Button } from '#/components/ui/button'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 
-type DriveHeaderProps = {
-  search: string
-  setSearch: React.Dispatch<React.SetStateAction<string>>
-}
+export default function DriveHeader() {
+  const navigate = useNavigate()
 
-export default function DriveHeader({ search, setSearch }: DriveHeaderProps) {
+  const { search = '' } = useSearch({
+    from: '/drive',
+  })
+
+  const [inputValue, setInputValue] = useState(search)
+
+  useEffect(() => {
+    setInputValue(search)
+  }, [search])
+
+  const handleSearch = () => {
+    const value = inputValue.trim()
+
+    navigate({
+      //@ts-ignore
+      search: (prev) => ({
+        ...prev,
+        search: value,
+      }),
+    })
+  }
+
+  const handleClear = () => {
+    setInputValue('')
+
+    navigate({
+      //@ts-ignore
+      search: (prev) => ({
+        ...prev,
+        search: '',
+      }),
+    })
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur-xl">
       <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
@@ -29,17 +68,34 @@ export default function DriveHeader({ search, setSearch }: DriveHeaderProps) {
         </div>
 
         <div className="relative ml-auto w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-
           <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Search files..."
-            className="h-9 border-border/60 bg-muted/40 pl-9 pr-3 text-sm shadow-none focus-visible:bg-background"
+            className="h-9 border-border/60 bg-muted/40 pr-9 text-sm shadow-none focus-visible:bg-background"
           />
+
+          {inputValue && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleClear}
+              className="absolute right-1 top-1/2 size-7 -translate-y-1/2"
+            >
+              <X className="size-4" />
+
+              <span className="sr-only">Clear search</span>
+            </Button>
+          )}
         </div>
 
-        <UploadFileButton position="header" />
+        <Button type="button" onClick={handleSearch}>
+          <Search />
+
+          <span className="hidden lg:inline">Search</span>
+        </Button>
 
         <Separator orientation="vertical" className="h-5" />
 

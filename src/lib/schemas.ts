@@ -28,6 +28,10 @@ export const renameSchema = z.object({
     .max(255, 'Name is too long'),
 })
 
+export const searchSchema = z.object({
+  search: z.string().optional().default(''),
+})
+
 // SCHEMA TYPES
 export type CreateFolderInput = z.infer<typeof createFolderSchema>
 export type CreateFileInput = z.infer<typeof createFileSchema>

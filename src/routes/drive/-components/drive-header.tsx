@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Search, X } from 'lucide-react'
 
-import { UserButton } from '@clerk/tanstack-react-start'
+import { UserButton, useUser } from '@clerk/tanstack-react-start'
 
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '#/components/ui/button'
 import { useNavigate, useSearch } from '@tanstack/react-router'
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 
 export default function DriveHeader() {
   const navigate = useNavigate()
+  const { isLoaded, user } = useUser()
 
   const { search = '' } = useSearch({
     from: '/drive',
@@ -99,7 +101,13 @@ export default function DriveHeader() {
 
         <Separator orientation="vertical" className="h-5" />
 
-        <UserButton />
+        {isLoaded ? (
+          <UserButton />
+        ) : (
+          <Avatar>
+            <AvatarFallback>CV</AvatarFallback>
+          </Avatar>
+        )}
       </div>
     </header>
   )

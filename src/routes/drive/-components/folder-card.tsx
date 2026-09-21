@@ -12,6 +12,7 @@ import {
 import { useMarkFolderStar } from '#/lib/react-query/mutations'
 import { useState } from 'react'
 import { RenameDialog } from './rename-dialog'
+import { Link } from '@tanstack/react-router'
 
 type FolderCardProps = {
   id: string
@@ -67,7 +68,11 @@ export default function FolderCard({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>Open</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to={'/drive/folders/$folderId'} params={{ folderId: id }}>
+              Open
+            </Link>
+          </DropdownMenuItem>
 
           <DropdownMenuItem onClick={() => setRenameOpen(true)}>
             Rename

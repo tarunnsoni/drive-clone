@@ -14,6 +14,7 @@ import { Route as DriveRouteRouteImport } from './routes/drive/route'
 import { Route as DriveIndexRouteImport } from './routes/drive/index'
 import { Route as DriveStarredRouteImport } from './routes/drive/starred'
 import { Route as DriveTrashRouteImport } from './routes/drive/trash'
+import { Route as DriveFoldersFolderIdRouteImport } from './routes/drive/folders.$folderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const DriveTrashRoute = DriveTrashRouteImport.update({
   path: '/trash',
   getParentRoute: () => DriveRouteRoute,
 } as any)
+const DriveFoldersFolderIdRoute = DriveFoldersFolderIdRouteImport.update({
+  id: '/folders/$folderId',
+  path: '/folders/$folderId',
+  getParentRoute: () => DriveRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,12 +53,14 @@ export interface FileRoutesByFullPath {
   '/drive/starred': typeof DriveStarredRoute
   '/drive/trash': typeof DriveTrashRoute
   '/drive/': typeof DriveIndexRoute
+  '/drive/folders/$folderId': typeof DriveFoldersFolderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/drive/starred': typeof DriveStarredRoute
   '/drive/trash': typeof DriveTrashRoute
   '/drive': typeof DriveIndexRoute
+  '/drive/folders/$folderId': typeof DriveFoldersFolderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,14 +69,32 @@ export interface FileRoutesById {
   '/drive/starred': typeof DriveStarredRoute
   '/drive/trash': typeof DriveTrashRoute
   '/drive/': typeof DriveIndexRoute
+  '/drive/folders/$folderId': typeof DriveFoldersFolderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/drive' | '/drive/starred' | '/drive/trash' | '/drive/'
+  fullPaths:
+    | '/'
+    | '/drive'
+    | '/drive/starred'
+    | '/drive/trash'
+    | '/drive/'
+    | '/drive/folders/$folderId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/drive/starred' | '/drive/trash' | '/drive'
+  to:
+    | '/'
+    | '/drive/starred'
+    | '/drive/trash'
+    | '/drive'
+    | '/drive/folders/$folderId'
   id:
-    '__root__' | '/' | '/drive' | '/drive/starred' | '/drive/trash' | '/drive/'
+    | '__root__'
+    | '/'
+    | '/drive'
+    | '/drive/starred'
+    | '/drive/trash'
+    | '/drive/'
+    | '/drive/folders/$folderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -113,6 +139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DriveTrashRouteImport
       parentRoute: typeof DriveRouteRoute
     }
+    '/drive/folders/$folderId': {
+      id: '/drive/folders/$folderId'
+      path: '/folders/$folderId'
+      fullPath: '/drive/folders/$folderId'
+      preLoaderRoute: typeof DriveFoldersFolderIdRouteImport
+      parentRoute: typeof DriveRouteRoute
+    }
   }
 }
 
@@ -120,12 +153,14 @@ interface DriveRouteRouteChildren {
   DriveStarredRoute: typeof DriveStarredRoute
   DriveTrashRoute: typeof DriveTrashRoute
   DriveIndexRoute: typeof DriveIndexRoute
+  DriveFoldersFolderIdRoute: typeof DriveFoldersFolderIdRoute
 }
 
 const DriveRouteRouteChildren: DriveRouteRouteChildren = {
   DriveStarredRoute: DriveStarredRoute,
   DriveTrashRoute: DriveTrashRoute,
   DriveIndexRoute: DriveIndexRoute,
+  DriveFoldersFolderIdRoute: DriveFoldersFolderIdRoute,
 }
 
 const DriveRouteRouteWithChildren = DriveRouteRoute._addFileChildren(

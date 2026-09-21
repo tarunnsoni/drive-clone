@@ -25,6 +25,10 @@ const useMarkFileStar = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.FILES],
       })
+
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.STARRED_FILES],
+      })
     },
   })
 }
@@ -37,6 +41,9 @@ const useRenameFile = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.FILES],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.STARRED_FILES],
       })
     },
   })
@@ -109,6 +116,9 @@ function useMoveFileToTrash() {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.FILES],
       })
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.STARRED_FILES],
+      })
     },
   })
 }
@@ -154,6 +164,9 @@ const useMarkFolderStar = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.FOLDERS],
       })
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.STARRED_FOLDERS],
+      })
     },
   })
 }
@@ -167,6 +180,9 @@ const useRenameFolder = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.FOLDERS],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.STARRED_FOLDERS],
       })
     },
   })

@@ -6,9 +6,34 @@ import { getCurrentUserId } from './auth'
 import z from 'zod'
 
 const getFiles = createServerFn({ method: 'GET' }).handler(async () => {
+  const userId = await getCurrentUserId()
   const supabase = await createClient()
 
-  const { data: files, error } = await supabase.from('files').select('*')
+  const { data: files, error } = await supabase
+    .from('files')
+    .select('*')
+    .eq('user_id', userId)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return files as Array<File>
+})
+
+const getStarredFiles = createServerFn({ method: 'GET' }).handler(async () => {
+  const userId = await getCurrentUserId()
+  const supabase = await createClient()
+
+  const { data: files, error } = await supabase
+    .from('files')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('is_starred', true)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
 
   if (error) {
     throw new Error(error.message)
@@ -175,4 +200,5 @@ export {
   renameFile,
   moveFileToTrash,
   deleteFile,
+  getStarredFiles,
 }

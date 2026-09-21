@@ -6,12 +6,15 @@ import { getCurrentUserId } from './auth'
 import z from 'zod'
 
 const getFolders = createServerFn({ method: 'GET' }).handler(async () => {
+  const userId = await getCurrentUserId()
   const supabase = await createClient()
 
   const { data: folders, error } = await supabase
     .from('folders')
     .select('*, files(id)')
-    .order('name', { ascending: true })
+    .eq('user_id', userId)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
 
   if (error) {
     throw new Error(error.message)
@@ -19,6 +22,27 @@ const getFolders = createServerFn({ method: 'GET' }).handler(async () => {
 
   return folders as Array<Folder & { files: Array<{ id: string }> }>
 })
+
+const getStarredFolders = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const userId = await getCurrentUserId()
+    const supabase = await createClient()
+
+    const { data: folders, error } = await supabase
+      .from('folders')
+      .select('*, files(id)')
+      .eq('user_id', userId)
+      .eq('is_starred', true)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return folders as Array<Folder & { files: Array<{ id: string }> }>
+  },
+)
 
 const createFolder = createServerFn({ method: 'POST' })
   .validator(createFolderSchema)
@@ -119,4 +143,10 @@ const moveFolderToTrash = createServerFn({ method: 'POST' })
 
 const deleteFolder = createServerFn({ method: 'POST' })
 
-export { getFolders, createFolder, markFolderStar, renameFolder }
+export {
+  getFolders,
+  createFolder,
+  markFolderStar,
+  renameFolder,
+  getStarredFolders,
+}

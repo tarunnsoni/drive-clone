@@ -9,7 +9,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useMarkFolderStar } from '#/lib/react-query/mutations'
+import {
+  useMarkFolderStar,
+  useMoveFolderToTrash,
+  usePermanentlyDeleteFolder,
+  useRestoreFolder,
+} from '#/lib/react-query/mutations'
 import { useState } from 'react'
 import { RenameDialog } from './rename-dialog'
 import { Link } from '@tanstack/react-router'
@@ -25,6 +30,9 @@ export default function FolderCard({
   const [renameOpen, setRenameOpen] = useState(false)
 
   const markFolderStar = useMarkFolderStar()
+  const moveFolderToTrash = useMoveFolderToTrash()
+  const deleteFolderPermanently = usePermanentlyDeleteFolder()
+  const restoreFolder = useRestoreFolder()
 
   const handleStarFolder = async () => {
     await markFolderStar.mutateAsync(id)
@@ -84,7 +92,11 @@ export default function FolderCard({
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem className="text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                disabled={moveFolderToTrash.isPending}
+                onClick={() => moveFolderToTrash.mutate(id)}
+                className="text-destructive focus:text-destructive"
+              >
                 Move to Trash
               </DropdownMenuItem>
             </>
@@ -92,12 +104,19 @@ export default function FolderCard({
 
           {variant === 'trash' && (
             <>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={restoreFolder.isPending}
+                onClick={() => restoreFolder.mutate(id)}
+              >
                 <RotateCcw />
                 Restore
               </DropdownMenuItem>
 
-              <DropdownMenuItem className="text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                disabled={deleteFolderPermanently.isPending}
+                onClick={() => deleteFolderPermanently.mutate(id)}
+                className="text-destructive focus:text-destructive"
+              >
                 <Trash2 />
                 Delete permanently
               </DropdownMenuItem>

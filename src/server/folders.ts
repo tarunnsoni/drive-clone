@@ -4,6 +4,7 @@ import { type Folder } from '#/types/index'
 import { createFolderSchema, renameSchema } from '#/lib/schemas'
 import { getCurrentUserId } from './auth'
 import z from 'zod'
+import { getFolderTreeIds } from '#/utils'
 
 type IExistFolderFiles = {
   files: Array<{ id: string }>
@@ -207,9 +208,157 @@ const renameFolder = createServerFn({
     return folder
   })
 
-const moveFolderToTrash = createServerFn({ method: 'POST' })
+const moveFolderToTrash = createServerFn({
+  method: 'POST',
+})
+  .validator(z.uuid())
+  .handler(async ({ data: folderId }) => {
+    const userId = await getCurrentUserId()
+    const supabase = await createClient()
 
-const deleteFolder = createServerFn({ method: 'POST' })
+    const folderIds = await getFolderTreeIds(folderId, userId)
+
+    const deletedAt = new Date().toISOString()
+
+    // Trash all folders
+    const { error: folderError } = await supabase
+      .from('folders')
+      .update({
+        deleted_at: deletedAt,
+      })
+      .in('id', folderIds)
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+
+    if (folderError) {
+      throw new Error(folderError.message)
+    }
+
+    // Trash all files inside those folders
+    const { error: fileError } = await supabase
+      .from('files')
+      .update({
+        deleted_at: deletedAt,
+      })
+      .in('folder_id', folderIds)
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+
+    if (fileError) {
+      throw new Error(fileError.message)
+    }
+
+    return {
+      success: true,
+    }
+  })
+
+const deleteFolder = createServerFn({
+  method: 'POST',
+})
+  .validator(z.uuid())
+  .handler(async ({ data: folderId }) => {
+    const userId = await getCurrentUserId()
+    const supabase = await createClient()
+
+    const folderIds = await getFolderTreeIds(folderId, userId)
+
+    // Get all files inside the folder tree
+    const { data: files, error: filesError } = await supabase
+      .from('files')
+      .select('id, storage_path')
+      .in('folder_id', folderIds)
+      .eq('user_id', userId)
+
+    if (filesError) {
+      throw new Error(filesError.message)
+    }
+
+    // Delete actual files from Storage
+    if (files.length > 0) {
+      const storagePaths = files.map((file) => file.storage_path)
+
+      const { error: storageError } = await supabase.storage
+        .from('documents')
+        .remove(storagePaths)
+
+      if (storageError) {
+        throw new Error(storageError.message)
+      }
+    }
+
+    // Delete file records
+    if (files.length > 0) {
+      const { error: fileError } = await supabase
+        .from('files')
+        .delete()
+        .in(
+          'id',
+          files.map((file) => file.id),
+        )
+        .eq('user_id', userId)
+
+      if (fileError) {
+        throw new Error(fileError.message)
+      }
+    }
+
+    // Delete folder records
+    const { error: folderError } = await supabase
+      .from('folders')
+      .delete()
+      .in('id', folderIds)
+      .eq('user_id', userId)
+
+    if (folderError) {
+      throw new Error(folderError.message)
+    }
+
+    return {
+      success: true,
+    }
+  })
+
+const restoreFolder = createServerFn({
+  method: 'POST',
+})
+  .validator(z.uuid())
+  .handler(async ({ data: folderId }) => {
+    const userId = await getCurrentUserId()
+    const supabase = await createClient()
+
+    const folderIds = await getFolderTreeIds(folderId, userId)
+
+    // Restore folders
+    const { error: folderError } = await supabase
+      .from('folders')
+      .update({
+        deleted_at: null,
+      })
+      .in('id', folderIds)
+      .eq('user_id', userId)
+
+    if (folderError) {
+      throw new Error(folderError.message)
+    }
+
+    // Restore files inside those folders
+    const { error: fileError } = await supabase
+      .from('files')
+      .update({
+        deleted_at: null,
+      })
+      .in('folder_id', folderIds)
+      .eq('user_id', userId)
+
+    if (fileError) {
+      throw new Error(fileError.message)
+    }
+
+    return {
+      success: true,
+    }
+  })
 
 export {
   getFolders,
@@ -222,4 +371,5 @@ export {
   getTrashFolders,
   moveFolderToTrash,
   deleteFolder,
+  restoreFolder,
 }

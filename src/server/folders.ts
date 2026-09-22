@@ -5,13 +5,18 @@ import { createFolderSchema, renameSchema } from '#/lib/schemas'
 import { getCurrentUserId } from './auth'
 import z from 'zod'
 
+type IExistFolderFiles = {
+  files: Array<{ id: string }>
+  folders: Array<{ id: string }>
+}
+
 const getFolders = createServerFn({ method: 'GET' }).handler(async () => {
   const userId = await getCurrentUserId()
   const supabase = await createClient()
 
   const { data: folders, error } = await supabase
     .from('folders')
-    .select('*, files(id)')
+    .select('*, files(id), folders(id)')
     .eq('user_id', userId)
     .is('deleted_at', null)
     .is('parent_id', null)
@@ -21,7 +26,7 @@ const getFolders = createServerFn({ method: 'GET' }).handler(async () => {
     throw new Error(error.message)
   }
 
-  return folders as Array<Folder & { files: Array<{ id: string }> }>
+  return folders as Array<Folder & IExistFolderFiles>
 })
 
 const getStarredFolders = createServerFn({ method: 'GET' }).handler(
@@ -31,7 +36,7 @@ const getStarredFolders = createServerFn({ method: 'GET' }).handler(
 
     const { data: folders, error } = await supabase
       .from('folders')
-      .select('*, files(id)')
+      .select('*, files(id), folders(id)')
       .eq('user_id', userId)
       .eq('is_starred', true)
       .is('deleted_at', null)
@@ -41,7 +46,7 @@ const getStarredFolders = createServerFn({ method: 'GET' }).handler(
       throw new Error(error.message)
     }
 
-    return folders as Array<Folder & { files: Array<{ id: string }> }>
+    return folders as Array<Folder & IExistFolderFiles>
   },
 )
 
@@ -76,7 +81,7 @@ const getChildFolders = createServerFn({ method: 'GET' })
 
     const { data: folders, error } = await supabase
       .from('folders')
-      .select('*, files(id)')
+      .select('*, files(id), folders(id)')
       .eq('user_id', userId)
       .eq('parent_id', parentFolderId)
       .is('deleted_at', null)
@@ -86,7 +91,7 @@ const getChildFolders = createServerFn({ method: 'GET' })
 
     if (error) throw new Error(error.message)
 
-    return folders as Array<Folder & { files: Array<{ id: string }> }>
+    return folders as Array<Folder & IExistFolderFiles>
   })
 
 const createFolder = createServerFn({ method: 'POST' })

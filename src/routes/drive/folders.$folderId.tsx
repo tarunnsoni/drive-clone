@@ -123,7 +123,7 @@ function RouteComponent() {
                     key={folder.id}
                     id={folder.id}
                     name={folder.name}
-                    items={folder.files.length}
+                    items={folder.files.length + folder.folders.length}
                     isStarred={folder.is_starred}
                   />
                 ))}

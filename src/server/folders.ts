@@ -14,6 +14,7 @@ const getFolders = createServerFn({ method: 'GET' }).handler(async () => {
     .select('*, files(id)')
     .eq('user_id', userId)
     .is('deleted_at', null)
+    .is('parent_id', null)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -43,6 +44,50 @@ const getStarredFolders = createServerFn({ method: 'GET' }).handler(
     return folders as Array<Folder & { files: Array<{ id: string }> }>
   },
 )
+
+const getFolder = createServerFn({
+  method: 'GET',
+})
+  .validator(z.uuid())
+  .handler(async ({ data: folderId }) => {
+    const userId = await getCurrentUserId()
+    const supabase = await createClient()
+
+    const { data: folder, error } = await supabase
+      .from('folders')
+      .select('*')
+      .eq('id', folderId)
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+      .single()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return folder
+  })
+
+const getChildFolders = createServerFn({ method: 'GET' })
+  .validator(z.uuid())
+  .handler(async ({ data: parentFolderId }) => {
+    const userId = await getCurrentUserId()
+    const supabase = await createClient()
+
+    const { data: folders, error } = await supabase
+      .from('folders')
+      .select('*, files(id)')
+      .eq('user_id', userId)
+      .eq('parent_id', parentFolderId)
+      .is('deleted_at', null)
+      .order('created_at', {
+        ascending: false,
+      })
+
+    if (error) throw new Error(error.message)
+
+    return folders as Array<Folder & { files: Array<{ id: string }> }>
+  })
 
 const createFolder = createServerFn({ method: 'POST' })
   .validator(createFolderSchema)
@@ -145,8 +190,10 @@ const deleteFolder = createServerFn({ method: 'POST' })
 
 export {
   getFolders,
+  getStarredFolders,
+  getChildFolders,
   createFolder,
   markFolderStar,
   renameFolder,
-  getStarredFolders,
+  getFolder,
 }

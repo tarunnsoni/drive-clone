@@ -5,7 +5,9 @@ import {
   FileSpreadsheet,
   FileText,
   MoreHorizontal,
+  RotateCcw,
   Star,
+  Trash2,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -58,6 +60,7 @@ export default function FileCard({
   size,
   modified,
   starred = false,
+  variant = 'default',
 }: FileCardProps) {
   const [renameOpen, setRenameOpen] = useState(false)
 
@@ -109,30 +112,48 @@ export default function FileCard({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>Open</DropdownMenuItem>
+          {variant === 'default' && (
+            <>
+              <DropdownMenuItem>Open</DropdownMenuItem>
 
-          <DropdownMenuItem>Download</DropdownMenuItem>
+              <DropdownMenuItem>Download</DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setRenameOpen(true)}>
-            Rename
-          </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setRenameOpen(true)}>
+                Rename
+              </DropdownMenuItem>
 
-          <DropdownMenuItem
-            disabled={markFileStar.isPending}
-            onClick={handleFileStar}
-          >
-            {starred ? 'Remove from Starred' : 'Add to Starred'}
-          </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={markFileStar.isPending}
+                onClick={handleFileStar}
+              >
+                {starred ? 'Remove from Starred' : 'Add to Starred'}
+              </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
+              <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            onClick={handleMoveFileToTrash}
-            disabled={moveFileToTrash.isPending}
-            className="text-destructive focus:text-destructive"
-          >
-            Move to Trash
-          </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleMoveFileToTrash}
+                disabled={moveFileToTrash.isPending}
+                className="text-destructive focus:text-destructive"
+              >
+                Move to Trash
+              </DropdownMenuItem>
+            </>
+          )}
+
+          {variant === 'trash' && (
+            <>
+              <DropdownMenuItem>
+                <RotateCcw />
+                Restore
+              </DropdownMenuItem>
+
+              <DropdownMenuItem className="text-destructive focus:text-destructive">
+                <Trash2 />
+                Delete permanently
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

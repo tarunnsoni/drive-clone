@@ -1,5 +1,13 @@
 export type FileType = 'pdf' | 'image' | 'spreadsheet' | 'archive' | 'document'
 
+export type FolderCardProps = {
+  id: string
+  name: string
+  items: number
+  isStarred: boolean
+  variant?: 'default' | 'trash'
+}
+
 export type FileCardProps = {
   id: string
   name: string
@@ -7,6 +15,7 @@ export type FileCardProps = {
   size: string
   modified: string
   starred?: boolean
+  variant?: 'default' | 'trash'
 }
 
 export type Folder = {

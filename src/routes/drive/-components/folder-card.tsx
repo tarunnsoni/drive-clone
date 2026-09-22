@@ -1,4 +1,4 @@
-import { Folder, MoreHorizontal, Star } from 'lucide-react'
+import { Folder, MoreHorizontal, RotateCcw, Star, Trash2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -13,19 +13,14 @@ import { useMarkFolderStar } from '#/lib/react-query/mutations'
 import { useState } from 'react'
 import { RenameDialog } from './rename-dialog'
 import { Link } from '@tanstack/react-router'
-
-type FolderCardProps = {
-  id: string
-  name: string
-  items: number
-  isStarred: boolean
-}
+import type { FolderCardProps } from '#/types'
 
 export default function FolderCard({
   id,
   name,
   items,
   isStarred,
+  variant = 'default',
 }: FolderCardProps) {
   const [renameOpen, setRenameOpen] = useState(false)
 
@@ -68,28 +63,46 @@ export default function FolderCard({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild>
-            <Link to={'/drive/folders/$folderId'} params={{ folderId: id }}>
-              Open
-            </Link>
-          </DropdownMenuItem>
+          {variant === 'default' && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link to={'/drive/folders/$folderId'} params={{ folderId: id }}>
+                  Open
+                </Link>
+              </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setRenameOpen(true)}>
-            Rename
-          </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setRenameOpen(true)}>
+                Rename
+              </DropdownMenuItem>
 
-          <DropdownMenuItem
-            disabled={markFolderStar.isPending}
-            onClick={handleStarFolder}
-          >
-            {isStarred ? 'Unstar' : 'Star'}
-          </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={markFolderStar.isPending}
+                onClick={handleStarFolder}
+              >
+                {isStarred ? 'Unstar' : 'Star'}
+              </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
+              <DropdownMenuSeparator />
 
-          <DropdownMenuItem className="text-destructive focus:text-destructive">
-            Move to Trash
-          </DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive focus:text-destructive">
+                Move to Trash
+              </DropdownMenuItem>
+            </>
+          )}
+
+          {variant === 'trash' && (
+            <>
+              <DropdownMenuItem>
+                <RotateCcw />
+                Restore
+              </DropdownMenuItem>
+
+              <DropdownMenuItem className="text-destructive focus:text-destructive">
+                <Trash2 />
+                Delete permanently
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

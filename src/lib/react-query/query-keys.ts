@@ -6,4 +6,6 @@ export const QUERY_KEYS = {
   STARRED_FOLDERS: 'starred_folders',
   STARRED_FILES: 'starred_files',
   CHILDREN: 'children',
+  TRASH_FILES: 'trash_files',
+  TRASH_FOLDERS: 'trash_folders',
 }

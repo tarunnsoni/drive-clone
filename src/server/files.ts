@@ -64,6 +64,24 @@ const getFolderFiles = createServerFn({ method: 'GET' })
     return files as Array<File>
   })
 
+const getTrashFiles = createServerFn({ method: 'GET' }).handler(async () => {
+  const userId = await getCurrentUserId()
+  const supabase = await createClient()
+
+  const { data: files, error } = await supabase
+    .from('files')
+    .select('*')
+    .eq('user_id', userId)
+    .not('deleted_at', 'is', null)
+    .order('deleted_at', {
+      ascending: false,
+    })
+
+  if (error) throw new Error(error.message)
+
+  return files as Array<File>
+})
+
 const createFileRecord = createServerFn({ method: 'POST' })
   .validator(createFileSchema)
   .handler(async ({ data }) => {
@@ -219,6 +237,7 @@ export {
   getFiles,
   getStarredFiles,
   getFolderFiles,
+  getTrashFiles,
   createFileRecord,
   markFileStar,
   renameFile,

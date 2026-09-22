@@ -94,6 +94,24 @@ const getChildFolders = createServerFn({ method: 'GET' })
     return folders as Array<Folder & IExistFolderFiles>
   })
 
+const getTrashFolders = createServerFn({ method: 'GET' }).handler(async () => {
+  const userId = await getCurrentUserId()
+  const supabase = await createClient()
+
+  const { data: folders, error } = await supabase
+    .from('folders')
+    .select('*, files(id), folders(id)')
+    .eq('user_id', userId)
+    .not('deleted_at', 'is', null)
+    .order('deleted_at', {
+      ascending: false,
+    })
+
+  if (error) throw new Error(error.message)
+
+  return folders as Array<Folder & IExistFolderFiles>
+})
+
 const createFolder = createServerFn({ method: 'POST' })
   .validator(createFolderSchema)
   .handler(async ({ data }) => {
@@ -201,4 +219,7 @@ export {
   markFolderStar,
   renameFolder,
   getFolder,
+  getTrashFolders,
+  moveFolderToTrash,
+  deleteFolder,
 }

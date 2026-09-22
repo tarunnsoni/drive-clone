@@ -4,9 +4,17 @@ import {
   getFolder,
   getFolders,
   getStarredFolders,
+  getTrashFolders,
 } from '#/server/folders'
 import { useQuery } from '@tanstack/react-query'
-import { getFiles, getFolderFiles, getStarredFiles } from '#/server/files'
+import {
+  getFiles,
+  getFolderFiles,
+  getStarredFiles,
+  getTrashFiles,
+} from '#/server/files'
+
+// -- FILES --
 
 const useFiles = () => {
   return useQuery({
@@ -29,6 +37,15 @@ const useFolderFiles = (folderId: string) => {
     enabled: !!folderId,
   })
 }
+
+const useTrashFiles = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.TRASH_FILES],
+    queryFn: getTrashFiles,
+  })
+}
+
+// -- FOLDERS --
 
 const useFolders = () => {
   return useQuery({
@@ -60,11 +77,20 @@ const useChildFolders = (folderId: string) => {
   })
 }
 
+const useTrashFolders = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.TRASH_FOLDERS],
+    queryFn: getTrashFolders,
+  })
+}
+
 export {
-  useFolders,
   useFiles,
   useStarredFiles,
+  useFolderFiles,
+  useTrashFiles,
+  useFolders,
   useStarredFolders,
   useChildFolders,
-  useFolderFiles,
+  useTrashFolders,
 }

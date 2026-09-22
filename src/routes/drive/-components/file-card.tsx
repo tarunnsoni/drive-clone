@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
+  useDeleteFile,
   useMarkFileStar,
   useMoveFileToTrash,
 } from '#/lib/react-query/mutations'
@@ -67,6 +68,7 @@ export default function FileCard({
   const Icon = getFileIcon(type)
   const markFileStar = useMarkFileStar()
   const moveFileToTrash = useMoveFileToTrash()
+  const deleteFilePermanently = useDeleteFile()
 
   const handleFileStar = async () => {
     await markFileStar.mutateAsync(id)
@@ -148,7 +150,11 @@ export default function FileCard({
                 Restore
               </DropdownMenuItem>
 
-              <DropdownMenuItem className="text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                disabled={deleteFilePermanently.isPending}
+                onClick={() => deleteFilePermanently.mutate(id)}
+                className="text-destructive focus:text-destructive"
+              >
                 <Trash2 />
                 Delete permanently
               </DropdownMenuItem>

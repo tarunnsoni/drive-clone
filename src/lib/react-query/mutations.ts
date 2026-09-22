@@ -135,6 +135,9 @@ function useDeleteFile() {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.FILES],
       })
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.TRASH_FILES],
+      })
     },
   })
 }

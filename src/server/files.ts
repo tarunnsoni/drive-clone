@@ -215,21 +215,35 @@ const deleteFile = createServerFn({ method: 'POST' })
   .validator(z.uuid())
   .handler(async ({ data: fileId }) => {
     const userId = await getCurrentUserId()
-
     const supabase = await createClient()
 
-    const { success, error } = await supabase
+    const { data: file, error: fileError } = await supabase
+      .from('files')
+      .select('id, storage_path')
+      .eq('user_id', userId)
+      .eq('id', fileId)
+      .not('deleted_at', 'is', null)
+      .single()
+
+    if (fileError || !file) throw new Error('File not found')
+
+    const { error: storageError } = await supabase.storage
+      .from('documents')
+      .remove([file.storage_path])
+
+    if (storageError) throw new Error(storageError.message)
+
+    const { error: deleteError } = await supabase
       .from('files')
       .delete()
       .eq('id', fileId)
       .eq('user_id', userId)
 
-    if (error) {
-      throw new Error(error.message)
-    }
+    if (deleteError) throw new Error(deleteError.message)
 
-    if (success) {
-      return { success }
+    return {
+      success: true,
+      fileId: file.id,
     }
   })
 

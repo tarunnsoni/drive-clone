@@ -8,6 +8,7 @@ import {
   renameFile,
   deleteFile,
   moveFileToTrash,
+  restoreFile,
 } from '#/server/files'
 import { createBrowserSupabaseClient } from '../supabase/client'
 import { useAuth } from '@clerk/tanstack-react-start'
@@ -142,6 +143,22 @@ function useDeleteFile() {
   })
 }
 
+function useRestoreFile() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (fileId: string) => restoreFile({ data: fileId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.FILES],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.TRASH_FILES],
+      })
+    },
+  })
+}
+
 // -- FOLDERS --
 
 const useCreateFolder = () => {
@@ -200,4 +217,5 @@ export {
   useRenameFolder,
   useMoveFileToTrash,
   useDeleteFile,
+  useRestoreFile,
 }

@@ -25,6 +25,7 @@ import {
   useDeleteFile,
   useMarkFileStar,
   useMoveFileToTrash,
+  useRestoreFile,
 } from '#/lib/react-query/mutations'
 import { useState } from 'react'
 import { RenameDialog } from './rename-dialog'
@@ -69,6 +70,7 @@ export default function FileCard({
   const markFileStar = useMarkFileStar()
   const moveFileToTrash = useMoveFileToTrash()
   const deleteFilePermanently = useDeleteFile()
+  const restoreFile = useRestoreFile()
 
   const handleFileStar = async () => {
     await markFileStar.mutateAsync(id)
@@ -145,7 +147,10 @@ export default function FileCard({
 
           {variant === 'trash' && (
             <>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={restoreFile.isPending}
+                onClick={() => restoreFile.mutate(id)}
+              >
                 <RotateCcw />
                 Restore
               </DropdownMenuItem>

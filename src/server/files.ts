@@ -247,6 +247,27 @@ const deleteFile = createServerFn({ method: 'POST' })
     }
   })
 
+const restoreFile = createServerFn({ method: 'POST' })
+  .validator(z.uuid())
+  .handler(async ({ data: fileId }) => {
+    const userId = await getCurrentUserId()
+    const supabase = await createClient()
+
+    const { data: file, error } = await supabase
+      .from('files')
+      .update({
+        deleted_at: null,
+      })
+      .eq('user_id', userId)
+      .eq('id', fileId)
+      .not('deleted_at', 'is', null)
+      .single()
+
+    if (error) throw new Error(error.message)
+
+    return file
+  })
+
 export {
   getFiles,
   getStarredFiles,
@@ -257,4 +278,5 @@ export {
   renameFile,
   moveFileToTrash,
   deleteFile,
+  restoreFile,
 }
